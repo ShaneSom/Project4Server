@@ -6,21 +6,25 @@ import javafx.util.Pair;
 public class Message implements Serializable {
     static final long serialVersionUID = 42L;
 
-    boolean isPlacingShips = false;
+    boolean finishedPlacingShips = false;
     boolean isAttacking = false;
     boolean didHit = false;
-    int[][] updateGrid;
+
+    String msgTo;
+    String msgFrom;
     Pair<Integer,Integer> attackCoord;
 
+    Boat newBoat;
 
-    public void setUpdateGrid(int[][] updatedGrid){
-        updateGrid = updatedGrid;
-
+    public void setNewBoat(Boat t){
+        newBoat = t;
     }
 
-    public int[][] getUpdateGrid(){
-        return updateGrid;
+    public Boat getNewBoat(){
+        return newBoat;
     }
+
+
 
     public void setAttackCoord(Pair<Integer,Integer> coords){
         attackCoord = coords;
@@ -30,6 +34,21 @@ public class Message implements Serializable {
         return attackCoord;
     }
 
+    public void setMsgFrom(String msgFrom) {
+        this.msgFrom = msgFrom;
+    }
+
+    public String getMsgFrom() {
+        return msgFrom;
+    }
+
+    public void setMsgTo(String msgTo) {
+        this.msgTo = msgTo;
+    }
+
+    public String getMsgTo() {
+        return msgTo;
+    }
 
 
 }

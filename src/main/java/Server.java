@@ -6,14 +6,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import javafx.application.Platform;
-import javafx.scene.control.ListView;
-/*
- * Clicker: A: I really get it    B: No idea what you are talking about
- * C: kind of following
- */
+import javafx.util.Pair;
 
 public class Server{
+
+	BattleshipGameLogic battleshipGame;
 
 	int count = 1;
 	ArrayList<ClientThread> clients = new ArrayList<ClientThread>();
@@ -63,7 +60,13 @@ public class Server{
 			ObjectInputStream in;
 			ObjectOutputStream out;
 
-			int[][] clientGrid = new int[10][10];
+			ClientThread opp;
+
+			boolean playAI;
+
+			String username;
+			ArrayList<Boat> battleShips = new ArrayList<>();
+
 
 			ClientThread(Socket s, int count){
 				this.connection = s;
@@ -78,6 +81,13 @@ public class Server{
 					}
 					catch(Exception e) {}
 				}
+			}
+
+			public void updateClient(ClientThread to,String message) {
+				try {
+					to.out.writeObject(message);
+				}
+				catch(Exception e) {}
 			}
 
 			public void run(){
@@ -98,9 +108,26 @@ public class Server{
 					    	Object data = in.readObject();
 							if (data instanceof Message){
 								Message clientMessage = (Message)data;
+								if (clientMessage.isAttacking){ // Checks pair to see if hit
+									Pair<Integer,Integer> coord = clientMessage.getAttackCoord();
+									for (int i = 0; i < battleShips.size(); i++){
+										if (battleShips.get(i).checkHit(coord)){
+											//TODO ALERT HIT, SWITCH TURNS, CHECK FOR SUNKEN SHIP
+
+										}else{
+											//TODO ALERT MISS, SWITCH TURNS
+
+										}
+
+									}
+								}
+								if (clientMessage.finishedPlacingShips){
+									battleShips.add(clientMessage.newBoat);
+
+								}
 							}
-					    	callback.accept("client: " + count + " sent: " + data);
-					    	updateClients("client #"+count+" said: "+data);
+//					    	callback.accept("client: " + count + " sent: " + data);
+//					    	updateClients("client #"+count+" said: "+data);
 
 					    	}
 					    catch(Exception e) {

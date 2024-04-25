@@ -35,6 +35,7 @@ public class GuiServer extends Application{
 //				listItems.getItems().add(data.toString());
 				if (data instanceof Message){
 					Message clientMessage = (Message)data;
+
 				}
 			});
 		});
