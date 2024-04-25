@@ -9,12 +9,15 @@ public class Message implements Serializable {
     boolean finishedPlacingShips = false;
     boolean isAttacking = false;
     boolean didHit = false;
+    boolean isUsername = false;
 
     String msgTo;
     String msgFrom;
     Pair<Integer,Integer> attackCoord;
 
     Boat newBoat;
+
+    String msg;
 
     public void setNewBoat(Boat t){
         newBoat = t;

@@ -3,6 +3,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -60,7 +61,7 @@ public class Server{
 			ObjectInputStream in;
 			ObjectOutputStream out;
 
-			ClientThread opp;
+			boolean lookingForPlayer;
 
 			boolean playAI;
 
@@ -79,15 +80,35 @@ public class Server{
 					try {
 					 t.out.writeObject(message);
 					}
-					catch(Exception e) {}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 
-			public void updateClient(ClientThread to,String message) {
+			public void updateClient(ClientThread to, String message) {
 				try {
 					to.out.writeObject(message);
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			public void lookForPlayer(){ // Set client with client
+				for (ClientThread client : clients
+				) {
+					if (client.lookingForPlayer && !(client.username.equals(username))){
+						System.out.println("MATCH FOUND");
+						lookingForPlayer = false;
+						client.lookingForPlayer = false;
+						battleshipGame = new BattleshipGameLogic(this, client);
+						updateClient(this, "MATCH FOUND");
+						updateClient(client, "MATCH FOUND");
+						updateClient(battleshipGame.p1, "turn");
+						updateClient(battleshipGame.p2, "wait");
+					}
+				}
 			}
 
 			public void run(){
@@ -106,24 +127,25 @@ public class Server{
 				 while(true) {
 					    try {
 					    	Object data = in.readObject();
+							System.out.println(data.toString());
 							if (data instanceof Message){
 								Message clientMessage = (Message)data;
 								if (clientMessage.isAttacking){ // Checks pair to see if hit
-									Pair<Integer,Integer> coord = clientMessage.getAttackCoord();
-									for (int i = 0; i < battleShips.size(); i++){
-										if (battleShips.get(i).checkHit(coord)){
-											//TODO ALERT HIT, SWITCH TURNS, CHECK FOR SUNKEN SHIP
 
-										}else{
-											//TODO ALERT MISS, SWITCH TURNS
-
-										}
-
-									}
 								}
 								if (clientMessage.finishedPlacingShips){
 									battleShips.add(clientMessage.newBoat);
 
+								}
+								if (clientMessage.isUsername){
+									username = clientMessage.msg;
+								}
+							}else{
+								String msg = data.toString();
+								if (msg.equals("matchmake")){
+									System.out.println(username + "IS LOOKING");
+									lookingForPlayer = true;
+									lookForPlayer();
 								}
 							}
 //					    	callback.accept("client: " + count + " sent: " + data);

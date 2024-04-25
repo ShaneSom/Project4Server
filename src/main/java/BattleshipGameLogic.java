@@ -1,6 +1,10 @@
+import javafx.util.Pair;
+
 public class BattleshipGameLogic {
     Server.ClientThread p1;
     Server.ClientThread p2;
+
+    Server.ClientThread currentPTurn;
 
     AI aiPlay;
 
@@ -26,10 +30,53 @@ public class BattleshipGameLogic {
 
 
     public Server.ClientThread whoPlayFirst(){
-        if (Math.round( Math.random() )  == 0){
+        turn = (int)Math.round(Math.random());
+        if (turn  == 0){
+            currentPTurn = p1;
             return p1;
         }else{
+            currentPTurn = p2;
             return p2;
         }
+    }
+
+    public Server.ClientThread whoTurn(){
+        if (turn  == 0){
+            currentPTurn = p1;
+            return p1;
+        }else{
+            currentPTurn = p2;
+            return p2;
+        }
+    }
+
+    public boolean attack(Pair<Integer,Integer> t){
+        Pair<Integer,Integer> coord = t;
+        if (currentPTurn.equals(p1)){ // attacks p2
+            for (int i = 0; i < p2.battleShips.size(); i++){
+                if (p2.battleShips.get(i).checkHit(coord)){
+                    //TODO ALERT HIT, SWITCH TURNS, CHECK FOR SUNKEN SHIP
+                    return true;
+
+                }else{
+                    //TODO ALERT MISS, SWITCH TURNS
+
+                }
+
+            }
+        } else{
+            for (int i = 0; i < p2.battleShips.size(); i++){
+                if (p2.battleShips.get(i).checkHit(coord)){
+                    //TODO ALERT HIT, SWITCH TURNS, CHECK FOR SUNKEN SHIP
+                    return true;
+
+                }else{
+                    //TODO ALERT MISS, SWITCH TURNS
+
+                }
+
+            }
+        }
+        return false;
     }
 }

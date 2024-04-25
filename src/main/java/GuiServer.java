@@ -66,7 +66,12 @@ public class GuiServer extends Application{
 		BorderPane pane = new BorderPane();
 		pane.setPadding(new Insets(70));
 		pane.setStyle("-fx-background-color: coral");
-		
+
+
+
+
+
+
 		pane.setCenter(listItems);
 		pane.setStyle("-fx-font-family: 'serif'");
 		return new Scene(pane, 500, 400);
