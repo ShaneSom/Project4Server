@@ -15,37 +15,37 @@ import javafx.scene.control.ListView;
 
 public class Server{
 
-	int count = 1;	
+	int count = 1;
 	ArrayList<ClientThread> clients = new ArrayList<ClientThread>();
 	TheServer server;
 	private Consumer<Serializable> callback;
-	
-	
+
+
 	Server(Consumer<Serializable> call){
-	
+
 		callback = call;
 		server = new TheServer();
 		server.start();
 	}
-	
-	
+
+
 	public class TheServer extends Thread{
-		
+
 		public void run() {
-		
+
 			try(ServerSocket mysocket = new ServerSocket(5555);){
 		    System.out.println("Server is waiting for a client!");
-		  
-			
+
+
 		    while(true) {
-		
+
 				ClientThread c = new ClientThread(mysocket.accept(), count);
 				callback.accept("client has connected to server: " + "client #" + count);
 				clients.add(c);
 				c.start();
-				
+
 				count++;
-				
+
 			    }
 			}//end of try
 				catch(Exception e) {
@@ -53,21 +53,23 @@ public class Server{
 				}
 			}//end of while
 		}
-	
+
 
 		class ClientThread extends Thread{
-			
-		
+
+
 			Socket connection;
 			int count;
 			ObjectInputStream in;
 			ObjectOutputStream out;
-			
+
+			int[][] clientGrid = new int[10][10];
+
 			ClientThread(Socket s, int count){
 				this.connection = s;
-				this.count = count;	
+				this.count = count;
 			}
-			
+
 			public void updateClients(String message) {
 				for(int i = 0; i < clients.size(); i++) {
 					ClientThread t = clients.get(i);
@@ -77,26 +79,29 @@ public class Server{
 					catch(Exception e) {}
 				}
 			}
-			
+
 			public void run(){
-					
+
 				try {
 					in = new ObjectInputStream(connection.getInputStream());
 					out = new ObjectOutputStream(connection.getOutputStream());
-					connection.setTcpNoDelay(true);	
+					connection.setTcpNoDelay(true);
 				}
 				catch(Exception e) {
 					System.out.println("Streams not open");
 				}
-				
+
 				updateClients("new client on server: client #"+count);
-					
+
 				 while(true) {
 					    try {
-					    	String data = in.readObject().toString();
+					    	Object data = in.readObject();
+							if (data instanceof Message){
+								Message clientMessage = (Message)data;
+							}
 					    	callback.accept("client: " + count + " sent: " + data);
 					    	updateClients("client #"+count+" said: "+data);
-					    	
+
 					    	}
 					    catch(Exception e) {
 					    	callback.accept("OOOOPPs...Something wrong with the socket from client: " + count + "....closing down!");
@@ -106,13 +111,13 @@ public class Server{
 					    }
 					}
 				}//end of run
-			
-			
+
+
 		}//end of client thread
 }
 
 
-	
-	
 
-	
+
+
+

@@ -32,7 +32,10 @@ public class GuiServer extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		serverConnection = new Server(data -> {
 			Platform.runLater(()->{
-				listItems.getItems().add(data.toString());
+//				listItems.getItems().add(data.toString());
+				if (data instanceof Message){
+					Message clientMessage = (Message)data;
+				}
 			});
 		});
 
