@@ -28,18 +28,6 @@ public class BattleshipGameLogic {
         p2 = p;
     }
 
-
-    public Server.ClientThread whoPlayFirst(){
-        turn = (int)Math.round(Math.random());
-        if (turn  == 0){
-            currentPTurn = p1;
-            return p1;
-        }else{
-            currentPTurn = p2;
-            return p2;
-        }
-    }
-
     public Server.ClientThread whoTurn(){
         if (turn  == 0){
             currentPTurn = p1;
@@ -53,30 +41,25 @@ public class BattleshipGameLogic {
     public boolean attack(Pair<Integer,Integer> t){
         Pair<Integer,Integer> coord = t;
         if (currentPTurn.equals(p1)){ // attacks p2
+            System.out.println("BATTLESHIPS SIZE: "+ p2.battleShips.size());
             for (int i = 0; i < p2.battleShips.size(); i++){
                 if (p2.battleShips.get(i).checkHit(coord)){
                     //TODO ALERT HIT, SWITCH TURNS, CHECK FOR SUNKEN SHIP
                     return true;
 
-                }else{
-                    //TODO ALERT MISS, SWITCH TURNS
-
                 }
-
             }
         } else{
-            for (int i = 0; i < p2.battleShips.size(); i++){
-                if (p2.battleShips.get(i).checkHit(coord)){
+            System.out.println("BATTLESHIPS SIZE: "+ p1.battleShips.size());
+            for (int i = 0; i < p1.battleShips.size(); i++){
+                if (p1.battleShips.get(i).checkHit(coord)) {
                     //TODO ALERT HIT, SWITCH TURNS, CHECK FOR SUNKEN SHIP
                     return true;
 
-                }else{
-                    //TODO ALERT MISS, SWITCH TURNS
-
                 }
-
             }
         }
+        //TODO ALERT MISS, SWITCH TURNS
         return false;
     }
 }

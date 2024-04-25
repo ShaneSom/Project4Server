@@ -106,6 +106,7 @@ public class Server{
 						updateClient(this, "MATCH FOUND");
 						updateClient(client, "MATCH FOUND");
 						updateClient(battleshipGame.p1, "turn");
+						battleshipGame.currentPTurn = battleshipGame.p1;
 						updateClient(battleshipGame.p2, "wait");
 					}
 				}
@@ -131,7 +132,40 @@ public class Server{
 							if (data instanceof Message){
 								Message clientMessage = (Message)data;
 								if (clientMessage.isAttacking){ // Checks pair to see if hit
+									if (battleshipGame.attack(clientMessage.attackCoord)){
 
+										if (battleshipGame.currentPTurn == battleshipGame.p1){
+											updateClient(battleshipGame.p1,"hit" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p2,"hO"  + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p2, "turn");
+											battleshipGame.currentPTurn = battleshipGame.p2;
+											updateClient(battleshipGame.p1, "wait");
+
+										}else{
+											updateClient(battleshipGame.p2,"hit" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p1,"hO" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p1, "turn");
+											battleshipGame.currentPTurn = battleshipGame.p1;
+
+											updateClient(battleshipGame.p2, "wait");
+										}
+									}else{
+										if (battleshipGame.currentPTurn == battleshipGame.p1){
+											updateClient(battleshipGame.p1,"miss" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p2,"mO" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p2, "turn");
+											battleshipGame.currentPTurn = battleshipGame.p2;
+
+											updateClient(battleshipGame.p1, "wait");
+										}else{
+											updateClient(battleshipGame.p2,"miss"  + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p1,"mO"  + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
+											updateClient(battleshipGame.p1, "turn");
+											battleshipGame.currentPTurn = battleshipGame.p1;
+
+											updateClient(battleshipGame.p2, "wait");
+										}
+									}
 								}
 								if (clientMessage.finishedPlacingShips){
 									battleShips.add(clientMessage.newBoat);
@@ -139,6 +173,9 @@ public class Server{
 								}
 								if (clientMessage.isUsername){
 									username = clientMessage.msg;
+								}
+								if (clientMessage.updateBoats){
+									battleShips = clientMessage.updateBoat;
 								}
 							}else{
 								String msg = data.toString();
@@ -153,6 +190,7 @@ public class Server{
 
 					    	}
 					    catch(Exception e) {
+							e.printStackTrace();
 					    	callback.accept("OOOOPPs...Something wrong with the socket from client: " + count + "....closing down!");
 					    	updateClients("Client #"+count+" has left the server!");
 					    	clients.remove(this);

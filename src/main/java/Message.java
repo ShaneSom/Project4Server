@@ -1,5 +1,7 @@
 
 import java.io.Serializable;
+import java.util.ArrayList;
+
 import javafx.util.Pair;
 
 
@@ -10,6 +12,9 @@ public class Message implements Serializable {
     boolean isAttacking = false;
     boolean didHit = false;
     boolean isUsername = false;
+    boolean updateBoats = false;
+
+    ArrayList<Boat> updateBoat;
 
     String msgTo;
     String msgFrom;
@@ -18,6 +23,9 @@ public class Message implements Serializable {
     Boat newBoat;
 
     String msg;
+
+    
+
 
     public void setNewBoat(Boat t){
         newBoat = t;
