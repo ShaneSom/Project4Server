@@ -133,21 +133,29 @@ public class Server{
 								Message clientMessage = (Message)data;
 								if (clientMessage.isAttacking){ // Checks pair to see if hit
 									if (battleshipGame.attack(clientMessage.attackCoord)){
-
 										if (battleshipGame.currentPTurn == battleshipGame.p1){
 											updateClient(battleshipGame.p1,"hit" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
 											updateClient(battleshipGame.p2,"hO"  + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
 											updateClient(battleshipGame.p2, "turn");
 											battleshipGame.currentPTurn = battleshipGame.p2;
 											updateClient(battleshipGame.p1, "wait");
+											if (battleshipGame.checkOut(battleshipGame.p2)){
+												System.out.println("PLAYER ONE WIN");
+												updateClient(battleshipGame.p1, "win");
+												updateClient(battleshipGame.p2, "lose");
+											}
 
 										}else{
 											updateClient(battleshipGame.p2,"hit" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
 											updateClient(battleshipGame.p1,"hO" + clientMessage.attackCoord.getKey() + "," + clientMessage.attackCoord.getValue());
 											updateClient(battleshipGame.p1, "turn");
 											battleshipGame.currentPTurn = battleshipGame.p1;
-
 											updateClient(battleshipGame.p2, "wait");
+											if (battleshipGame.checkOut(battleshipGame.p1)){
+												System.out.println("PLAYER TWO WIN");
+												updateClient(battleshipGame.p1, "win");
+												updateClient(battleshipGame.p2, "lose");
+											}
 										}
 									}else{
 										if (battleshipGame.currentPTurn == battleshipGame.p1){

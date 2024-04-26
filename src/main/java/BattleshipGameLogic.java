@@ -20,6 +20,18 @@ public class BattleshipGameLogic {
 
     }
 
+    public boolean checkOut(Server.ClientThread p){
+        for (Boat s:
+             p.battleShips) {
+            if (s.lives != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
     public void setP1(Server.ClientThread p){
         p1 = p;
     }
